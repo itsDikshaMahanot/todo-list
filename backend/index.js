@@ -17,12 +17,9 @@ app.post("/todo", async (req, res) => {
     description: description,
     iscompleted: isCompleted,
   });
+
   await todo.save();
-  res.send({
-    title: title,
-    description: description,
-    iscompleted: isCompleted,
-  });
+  return res.json({ message: await Todo.find({ title: title }) });
 });
 
 app.get("/todo", async (req, res) => {
@@ -49,7 +46,7 @@ app.patch("/todo/:id", async (req, res) => {
     if (updated.modifiedCount != 1) {
       return res.status(404).json({ message: "Cannot update User" });
     } else {
-      return res.status(200).json({ message: "User updated" });
+      return res.json({ message: await Todo.findById({ _id: req.params.id }) });
     }
   } catch (err) {
     return res.status(500).json({ message: err.message });
