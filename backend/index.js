@@ -15,14 +15,37 @@ app.get("/todo", async (req, res) => {
     .catch((error) => res.send("Error" + error));
 });
 
-app.get("/todo/:date", async (req, res) => {
+// to get just date task
+// app.get("/todo/:date", async (req, res) => {
+//   console.log("new request for get by date", req.params.date);
+//   try {
+//     const filter_stage = {
+//       createdAt: { $gte: new Date(req.params.date).toISOString() },
+//     };
+//     const data = await Todo.find(filter_stage);
+//     return res.send({ message: data });
+//   } catch (err) {
+//     return res.status(404).json({ message: err.message });
+//   }
+// });
+
+// to get date wise task
+app.get("/current-todo/:date", async (req, res) => {
   console.log("new request for get by date", req.params.date);
   try {
+    // const today = new Date().toISOString();
+    var d = new Date(req.params.date);
+    d.setDate(d.getDate() + 1);
+    console.log(d);
+
     const filter_stage = {
-      createdAt: { $gte: new Date(req.params.date).toISOString() },
+      createdAt: {
+        $gt: new Date(req.params.date),
+        $lt: new Date(d),
+      },
     };
     const data = await Todo.find(filter_stage);
-    return res.send({ message: data });
+    return res.json({ message: data });
   } catch (err) {
     return res.status(404).json({ message: err.message });
   }
