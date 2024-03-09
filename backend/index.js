@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const moment = require("moment");
 const { Todo } = require("./model/todo_schema");
 const app = express();
 const port = 3000;
@@ -7,6 +8,25 @@ const mongooseURI =
   "mongodb+srv://mani:mani123@cluster0.kw63si7.mongodb.net/todos";
 
 app.use(express.json());
+
+app.get("/todo", async (req, res) => {
+  Todo.find()
+    .then((todo) => res.send(todo))
+    .catch((error) => res.send("Error" + error));
+});
+
+app.get("/todo/:date", async (req, res) => {
+  console.log("new request for get by date", req.params.date);
+  try {
+    const filter_stage = {
+      createdAt: { $gte: new Date(req.params.date).toISOString() },
+    };
+    const data = await Todo.find(filter_stage);
+    return res.send({ message: data });
+  } catch (err) {
+    return res.status(404).json({ message: err.message });
+  }
+});
 
 app.post("/todo", async (req, res) => {
   console.log(req.body);
@@ -20,12 +40,6 @@ app.post("/todo", async (req, res) => {
 
   await todo.save();
   return res.json({ message: await Todo.find({ title: title }) });
-});
-
-app.get("/todo", async (req, res) => {
-  Todo.find()
-    .then((todo) => res.send(todo))
-    .catch((error) => res.send("Error" + error));
 });
 
 app.patch("/todo/:id", async (req, res) => {
@@ -70,7 +84,7 @@ app.delete("/todo/:id", async (req, res) => {
 });
 
 app.listen(port, async () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`TODO APP STARTED ${port}`);
   await mongoose.connect(mongooseURI).then(() => {
     console.log("DB Connected");
   });

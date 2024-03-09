@@ -2,11 +2,11 @@ const { Schema, model } = require("mongoose");
 
 const todoSchema = new Schema(
   {
-    title: String,
+    title: { type: String },
     description: String,
     iscompleted: Boolean,
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 const Todo = model("Todo", todoSchema);
